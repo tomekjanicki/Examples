@@ -1,4 +1,5 @@
 ﻿using Code.Infrastructure.Json;
+using Code.Infrastructure.MessagePack;
 using Code.Models;
 using FluentAssertions;
 using MessagePack;
@@ -11,7 +12,7 @@ public class ClassWithConstructorAndReadOnlyCollectionPropertyTests
     public void Serialize()
     {
         var obj = new ClassWithConstructorAndReadOnlyCollectionProperty(Array.Empty<int>());
-        var jsonString = SerializerWrapper.Serialize(obj);
+        var jsonString = JsonSerializerWrapper.Serialize(obj);
         jsonString.Should().Be(@"{""Items"":[]}");
     }
 
@@ -19,7 +20,7 @@ public class ClassWithConstructorAndReadOnlyCollectionPropertyTests
     public void DeserializeWithObject()
     {
         const string value = @"{""Items"":[]}";
-        var result = SerializerWrapper.Deserialize<ClassWithConstructorAndReadOnlyCollectionProperty>(value);
+        var result = JsonSerializerWrapper.Deserialize<ClassWithConstructorAndReadOnlyCollectionProperty>(value);
         result.Should().NotBeNull();
         result!.Items.Count.Should().Be(0);
     }
@@ -28,7 +29,7 @@ public class ClassWithConstructorAndReadOnlyCollectionPropertyTests
     public void DeserializeWithNull()
     {
         const string value = @"{""Items"":null}";
-        var result = SerializerWrapper.Deserialize<ClassWithConstructorAndReadOnlyCollectionProperty>(value);
+        var result = JsonSerializerWrapper.Deserialize<ClassWithConstructorAndReadOnlyCollectionProperty>(value);
         result.Should().NotBeNull();
         result!.Items.Count.Should().Be(0);
     }
@@ -38,7 +39,7 @@ public class ClassWithConstructorAndReadOnlyCollectionPropertyTests
     {
         //not good
         const string value = @"{}";
-        var func = () => SerializerWrapper.Deserialize<ClassWithConstructorAndReadOnlyCollectionProperty>(value);
+        var func = () => JsonSerializerWrapper.Deserialize<ClassWithConstructorAndReadOnlyCollectionProperty>(value);
         func.Should().Throw<ArgumentNullException>();
     }
 
@@ -46,8 +47,30 @@ public class ClassWithConstructorAndReadOnlyCollectionPropertyTests
     public void MessagePackSerializeAndDeserialize()
     {
         var sourceObj = new ClassWithConstructorAndReadOnlyCollectionProperty(Array.Empty<int>());
-        var serialized = MessagePackSerializer.Serialize(sourceObj);
-        var destObj = MessagePackSerializer.Deserialize<ClassWithConstructorAndReadOnlyCollectionProperty>(serialized);
+        var serialized = MessagePackSerializerWrapper.Serialize(sourceObj);
+        var destObj = MessagePackSerializerWrapper.Deserialize<ClassWithConstructorAndReadOnlyCollectionProperty>(serialized);
         destObj.Items.Count.Should().Be(0);
+    }
+
+    [Fact]
+    public void MessagePackSerializeAndDeserializeForceNull()
+    {
+        var sourceObj = new ClassWithConstructorAndReadOnlyCollectionPropertyTmp(null);
+        var serialized = MessagePackSerializerWrapper.Serialize(sourceObj);
+        var destObj = MessagePackSerializerWrapper.Deserialize<ClassWithConstructorAndReadOnlyCollectionProperty>(serialized);
+        destObj.Items.Count.Should().Be(0);
+    }
+
+    [MessagePackObject]
+    public sealed class ClassWithConstructorAndReadOnlyCollectionPropertyTmp
+    {
+        [SerializationConstructor]
+        public ClassWithConstructorAndReadOnlyCollectionPropertyTmp(IReadOnlyCollection<int>? items)
+        {
+            Items = items;
+        }
+
+        [Key(0)]
+        public IReadOnlyCollection<int>? Items { get; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Code.StronglyTypeIds;
+﻿using Code.Infrastructure.MessagePack;
+using Code.StronglyTypeIds;
 using FluentAssertions;
 using MessagePack;
 
@@ -10,8 +11,8 @@ public class DeviceIdMessagePackFormatterTests
     public void ShouldSerializeAndDeserializeWithValidObject()
     {
         var deviceId = (DeviceId)5;
-        var result = MessagePackSerializer.Serialize(deviceId);
-        var obj = MessagePackSerializer.Deserialize<DeviceId>(result);
+        var result = MessagePackSerializerWrapper.Serialize(deviceId);
+        var obj = MessagePackSerializerWrapper.Deserialize<DeviceId>(result);
         obj.Value.Should().Be(deviceId.Value);
     }
 
@@ -19,16 +20,16 @@ public class DeviceIdMessagePackFormatterTests
     public void NullableShouldSerializeAndDeserialize()
     {
         var deviceId = (DeviceId?)null;
-        var result = MessagePackSerializer.Serialize(deviceId);
-        var obj = MessagePackSerializer.Deserialize<DeviceId?>(result);
+        var result = MessagePackSerializerWrapper.Serialize(deviceId);
+        var obj = MessagePackSerializerWrapper.Deserialize<DeviceId?>(result);
         obj.Should().BeNull();
     }
 
     [Fact]
     public void ShouldNotDeserializeFromInvalidValue()
     {
-        var result = MessagePackSerializer.Serialize(0);
-        var func = () => MessagePackSerializer.Deserialize<DeviceId?>(result);
+        var result = MessagePackSerializerWrapper.Serialize(0);
+        var func = () => MessagePackSerializerWrapper.Deserialize<DeviceId?>(result);
         func.Should().Throw<MessagePackSerializationException>();
     }
 }

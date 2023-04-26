@@ -11,7 +11,7 @@ public class ClassWithValueInitCompositePropertiesTests
     public void DeserializeWithAllProperties()
     {
         const string jsonString = @"{""DeviceId"":1,""OptionalDeviceId"":null}";
-        var result = SerializerWrapper.Deserialize<ClassWithValueInitCompositeProperties>(jsonString);
+        var result = JsonSerializerWrapper.Deserialize<ClassWithValueInitCompositeProperties>(jsonString);
         result.Should().NotBeNull();
         result!.DeviceId.Value.Should().Be(1);
         result.OptionalDeviceId.Should().BeNull();
@@ -21,7 +21,7 @@ public class ClassWithValueInitCompositePropertiesTests
     public void DeserializeWithForceNull()
     {
         const string jsonString = @"{""DeviceId"":null,""OptionalDeviceId"":null}";
-        var func = () => SerializerWrapper.Deserialize<ClassWithValueInitCompositeProperties>(jsonString);
+        var func = () => JsonSerializerWrapper.Deserialize<ClassWithValueInitCompositeProperties>(jsonString);
         func.Should().Throw<JsonException>();
     }
 
@@ -29,7 +29,7 @@ public class ClassWithValueInitCompositePropertiesTests
     public void DeserializeWithMissingProperty()
     {
         const string jsonString = @"{""OptionalDeviceId"":null}";
-        var func = () => SerializerWrapper.Deserialize<ClassWithValueInitCompositeProperties>(jsonString);
+        var func = () => JsonSerializerWrapper.Deserialize<ClassWithValueInitCompositeProperties>(jsonString);
         func.Should().Throw<JsonException>();
     }
 }

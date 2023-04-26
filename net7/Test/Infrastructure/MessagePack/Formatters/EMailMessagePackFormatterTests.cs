@@ -1,4 +1,5 @@
-﻿using Code.StronglyTypeIds;
+﻿using Code.Infrastructure.MessagePack;
+using Code.StronglyTypeIds;
 using FluentAssertions;
 using MessagePack;
 
@@ -10,8 +11,8 @@ public class EMailMessagePackFormatterTests
     public void ShouldSerializeAndDeserializeWithValidObject()
     {
         var eMail = (EMail)"test@test.com";
-        var result = MessagePackSerializer.Serialize(eMail);
-        var obj = MessagePackSerializer.Deserialize<EMail>(result);
+        var result = MessagePackSerializerWrapper.Serialize(eMail);
+        var obj = MessagePackSerializerWrapper.Deserialize<EMail>(result);
         obj.Value.Should().Be(eMail.Value);
     }
 
@@ -19,16 +20,16 @@ public class EMailMessagePackFormatterTests
     public void NullableShouldSerializeAndDeserialize()
     {
         var eMail = (EMail?)null;
-        var result = MessagePackSerializer.Serialize(eMail);
-        var obj = MessagePackSerializer.Deserialize<EMail?>(result);
+        var result = MessagePackSerializerWrapper.Serialize(eMail);
+        var obj = MessagePackSerializerWrapper.Deserialize<EMail?>(result);
         obj.Should().BeNull();
     }
 
     [Fact]
     public void ShouldNotDeserializeFromInvalidValue()
     {
-        var result = MessagePackSerializer.Serialize("not valid");
-        var func = () => MessagePackSerializer.Deserialize<EMail?>(result);
+        var result = MessagePackSerializerWrapper.Serialize("not valid");
+        var func = () => MessagePackSerializerWrapper.Deserialize<EMail?>(result);
         func.Should().Throw<MessagePackSerializationException>();
     }
 }

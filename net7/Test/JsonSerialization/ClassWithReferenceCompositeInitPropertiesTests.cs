@@ -11,7 +11,7 @@ public class ClassWithReferenceCompositeInitPropertiesTests
     public void DeserializeWithAllProperties()
     {
         const string jsonString = @"{""EMail"": ""test@test.com"",""OptionalEmail"":null}";
-        var result = SerializerWrapper.Deserialize<ClassWithReferenceCompositeInitProperties>(jsonString);
+        var result = JsonSerializerWrapper.Deserialize<ClassWithReferenceCompositeInitProperties>(jsonString);
         result.Should().NotBeNull();
         result!.EMail.Value.Should().Be("test@test.com");
         result.OptionalEmail.Should().BeNull();
@@ -21,7 +21,7 @@ public class ClassWithReferenceCompositeInitPropertiesTests
     public void DeserializeWithForceNull()
     {
         const string jsonString = @"{""EMail"": null,""OptionalEmail"":null}";
-        var func = () => SerializerWrapper.Deserialize<ClassWithReferenceCompositeInitProperties>(jsonString);
+        var func = () => JsonSerializerWrapper.Deserialize<ClassWithReferenceCompositeInitProperties>(jsonString);
         func.Should().Throw<ArgumentNullException>();
     }
 
@@ -29,7 +29,7 @@ public class ClassWithReferenceCompositeInitPropertiesTests
     public void DeserializeWithMissingProperty()
     {
         const string jsonString = @"{""OptionalEmail"":null}";
-        var func = () => SerializerWrapper.Deserialize<ClassWithReferenceCompositeInitProperties>(jsonString);
+        var func = () => JsonSerializerWrapper.Deserialize<ClassWithReferenceCompositeInitProperties>(jsonString);
         func.Should().Throw<JsonException>();
     }
 }

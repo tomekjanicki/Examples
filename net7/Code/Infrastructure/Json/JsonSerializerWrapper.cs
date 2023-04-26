@@ -3,11 +3,11 @@ using Code.Infrastructure.Json.Converters;
 
 namespace Code.Infrastructure.Json;
 
-public static class SerializerWrapper
+public static class JsonSerializerWrapper
 {
     private static readonly JsonSerializerOptions Options;
 
-    static SerializerWrapper()
+    static JsonSerializerWrapper()
     {
         Options = new JsonSerializerOptions();
         Options.Converters.Add(new ReadOnlyCollectionJsonConvertFactory());

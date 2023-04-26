@@ -11,7 +11,7 @@ public class DeviceIdJsonConverterTests
     public void ShouldSerializeToJson()
     {
         var deviceId = (DeviceId)5;
-        var result = SerializerWrapper.Serialize(deviceId);
+        var result = JsonSerializerWrapper.Serialize(deviceId);
         result.Should().Be(@"5");
     }
 
@@ -19,7 +19,7 @@ public class DeviceIdJsonConverterTests
     public void ShouldDeserializeFromValidJsonString()
     {
         const string jsonString = @"5";
-        var result = SerializerWrapper.Deserialize<DeviceId>(jsonString);
+        var result = JsonSerializerWrapper.Deserialize<DeviceId>(jsonString);
         result.Should().NotBeNull();
         result.Value.Should().Be(5);
     }
@@ -28,7 +28,7 @@ public class DeviceIdJsonConverterTests
     public void ShouldNotDeserializeFromInvalidValueJsonString()
     {
         const string jsonString = @"0";
-        var result = () => SerializerWrapper.Deserialize<DeviceId>(jsonString);
+        var result = () => JsonSerializerWrapper.Deserialize<DeviceId>(jsonString);
         result.Should().Throw<JsonException>();
     }
 }
