@@ -1,7 +1,10 @@
 ﻿using System.Text.Json;
 using Code.Infrastructure.Json;
+using Code.Infrastructure.MessagePack;
 using Code.Models;
+using Code.StronglyTypeIds;
 using FluentAssertions;
+using MessagePack;
 
 namespace Test.JsonSerialization;
 
@@ -31,5 +34,35 @@ public class ClassWithValueInitCompositePropertiesTests
         const string jsonString = @"{""OptionalDeviceId"":null}";
         var func = () => JsonSerializerWrapper.Deserialize<ClassWithValueInitCompositeProperties>(jsonString);
         func.Should().Throw<JsonException>();
+    }
+
+    [Fact]
+    public void MessagePackSerializeAndDeserialize()
+    {
+        var sourceObj = new ClassWithValueInitCompositeProperties { DeviceId = (DeviceId)5 };
+        var serialized = MessagePackSerializerWrapper.Serialize(sourceObj);
+        var destObj = MessagePackSerializerWrapper.Deserialize<ClassWithValueInitCompositeProperties>(serialized);
+        destObj.DeviceId.Value.Should().Be(5);
+        destObj.OptionalDeviceId.Should().BeNull();
+    }
+
+    [Fact]
+    public void MessagePackSerializeAndDeserializeForceNull()
+    {
+        var sourceObj = new ClassWithValueInitCompositePropertiesTmp();
+        var serialized = MessagePackSerializerWrapper.Serialize(sourceObj);
+        var func = () => MessagePackSerializerWrapper.Deserialize<ClassWithValueInitCompositeProperties>(serialized);
+
+        func.Should().Throw<MessagePackSerializationException>().WithInnerException<MessagePackSerializationException>();
+    }
+
+    [MessagePackObject]
+    public sealed class ClassWithValueInitCompositePropertiesTmp
+    {
+        [Key(0)]
+        public DeviceId? DeviceId { get; init; }
+
+        [Key(1)]
+        public DeviceId? OptionalDeviceId { get; init; }
     }
 }

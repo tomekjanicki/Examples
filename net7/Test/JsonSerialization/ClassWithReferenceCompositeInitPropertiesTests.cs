@@ -1,7 +1,10 @@
 ﻿using System.Text.Json;
 using Code.Infrastructure.Json;
+using Code.Infrastructure.MessagePack;
 using Code.Models;
+using Code.StronglyTypeIds;
 using FluentAssertions;
+using MessagePack;
 
 namespace Test.JsonSerialization;
 
@@ -31,5 +34,35 @@ public class ClassWithReferenceCompositeInitPropertiesTests
         const string jsonString = @"{""OptionalEmail"":null}";
         var func = () => JsonSerializerWrapper.Deserialize<ClassWithReferenceCompositeInitProperties>(jsonString);
         func.Should().Throw<JsonException>();
+    }
+
+    [Fact]
+    public void MessagePackSerializeAndDeserialize()
+    {
+        var sourceObj = new ClassWithReferenceCompositeInitProperties { EMail = (EMail)"test@test.com" };
+        var serialized = MessagePackSerializerWrapper.Serialize(sourceObj);
+        var destObj = MessagePackSerializerWrapper.Deserialize<ClassWithReferenceCompositeInitProperties>(serialized);
+        destObj.EMail.Value.Should().Be("test@test.com");
+        destObj.OptionalEmail.Should().BeNull();
+    }
+
+    [Fact]
+    public void MessagePackSerializeAndDeserializeWithForceNull()
+    {
+        var sourceObj = new ClassWithReferenceCompositeInitPropertiesTemp();
+        var serialized = MessagePackSerializerWrapper.Serialize(sourceObj);
+        var func = () => MessagePackSerializerWrapper.Deserialize<ClassWithReferenceCompositeInitProperties>(serialized);
+
+        func.Should().Throw<MessagePackSerializationException>().WithInnerException<ArgumentNullException>();
+    }
+
+    [MessagePackObject]
+    public sealed class ClassWithReferenceCompositeInitPropertiesTemp
+    {
+        [Key(0)]
+        public EMail? EMail { get; init; }
+
+        [Key(1)]
+        public EMail? OptionalEmail { get; init; }
     }
 }

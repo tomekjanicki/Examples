@@ -1,7 +1,9 @@
 ﻿using System.Text.Json;
 using Code.Infrastructure.Json;
+using Code.Infrastructure.MessagePack;
 using Code.Models;
 using FluentAssertions;
+using MessagePack;
 
 namespace Test.JsonSerialization;
 
@@ -39,5 +41,30 @@ public class ClassWithReadOnlyCollectionInitPropertyTests
         const string value = @"{}";
         var func = () => JsonSerializerWrapper.Deserialize<ClassWithReadOnlyCollectionInitProperty>(value);
         func.Should().Throw<JsonException>();
+    }
+
+    [Fact]
+    public void MessagePackSerializeAndDeserialize()
+    {
+        var sourceObj = new ClassWithReadOnlyCollectionInitProperty { Items = Array.Empty<int>() };
+        var serialized = MessagePackSerializerWrapper.Serialize(sourceObj);
+        var destObj = MessagePackSerializerWrapper.Deserialize<ClassWithReadOnlyCollectionInitProperty>(serialized);
+        destObj.Items.Count.Should().Be(0);
+    }
+
+    [Fact]
+    public void MessagePackSerializeAndDeserializeForceNull()
+    {
+        var sourceObj = new ClassWithReadOnlyCollectionInitPropertyTmp();
+        var serialized = MessagePackSerializerWrapper.Serialize(sourceObj);
+        var destObj = MessagePackSerializerWrapper.Deserialize<ClassWithReadOnlyCollectionInitProperty>(serialized);
+        destObj.Items.Count.Should().Be(0);
+    }
+
+    [MessagePackObject]
+    public sealed class ClassWithReadOnlyCollectionInitPropertyTmp
+    {
+        [Key(0)]
+        public IReadOnlyCollection<int>? Items { get; init; }
     }
 }
