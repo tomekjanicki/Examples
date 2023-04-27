@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Code.Infrastructure.Json.Converters;
+namespace Code.Infrastructure.Json.ConvertFactories;
 
 public sealed class ReadOnlyCollectionJsonConvertFactory : JsonConverterFactory
 {
