@@ -1,4 +1,6 @@
-﻿namespace Code.Infrastructure.MessagePack.Formatters;
+﻿using Code.Infrastructure.MessagePack.Formatters;
+
+namespace Code.Infrastructure.MessagePack.Resolvers;
 
 public static class CustomFormatterResolverGetHelper
 {

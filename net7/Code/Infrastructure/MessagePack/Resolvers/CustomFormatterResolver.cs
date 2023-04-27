@@ -1,7 +1,7 @@
 ﻿using MessagePack.Formatters;
 using MessagePack;
 
-namespace Code.Infrastructure.MessagePack.Formatters;
+namespace Code.Infrastructure.MessagePack.Resolvers;
 
 public sealed class CustomFormatterResolver : IFormatterResolver
 {

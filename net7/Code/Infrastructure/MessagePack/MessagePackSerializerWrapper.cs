@@ -1,4 +1,4 @@
-﻿using Code.Infrastructure.MessagePack.Formatters;
+﻿using Code.Infrastructure.MessagePack.Resolvers;
 using MessagePack;
 using MessagePack.Resolvers;
 
