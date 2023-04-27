@@ -1,4 +1,5 @@
 ﻿using Code.Infrastructure.MessagePack.Formatters;
+using MessagePack.Formatters;
 
 namespace Code.Infrastructure.MessagePack.Resolvers;
 
@@ -9,5 +10,5 @@ public static class CustomFormatterResolverGetHelper
         {typeof(IReadOnlyCollection<int>), new ReadOnlyCollectionMessagePackFormatter<int>()}
     };
 
-    public static object? GetFormatter(Type t) => FormatterMap.TryGetValue(t, out var formatter) ? formatter : null;
+    public static IMessagePackFormatter<T>? GetFormatter<T>() => FormatterMap.TryGetValue(typeof(T), out var formatter) ? (IMessagePackFormatter<T>)formatter : null;
 }
