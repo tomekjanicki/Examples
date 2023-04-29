@@ -11,6 +11,9 @@ public static class JsonSerializerWrapper
     {
         Options = new JsonSerializerOptions();
         Options.Converters.Add(new ReadOnlyCollectionJsonConvertFactory());
+        Options.Converters.Add(new ReadOnlyArrayJsonConvertFactory());
+        Options.Converters.Add(new ReadOnlyDictionaryJsonConvertFactory());
+        Options.Converters.Add(new ReadOnlyArrayWithEqualityJsonConvertFactory());
     }
 
     public static string Serialize(object obj) => JsonSerializer.Serialize(obj, Options);

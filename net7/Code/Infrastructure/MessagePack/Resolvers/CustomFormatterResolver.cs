@@ -19,7 +19,7 @@ public sealed class CustomFormatterResolver : IFormatterResolver
 
         static FormatterCache()
         {
-            var formatter = CustomFormatterResolverGetHelper.GetFormatter<T>();
+            var formatter = MessagePackSerializationHelper.GetFormatter<T>();
             if (formatter is not null)
             {
                 Formatter = formatter;

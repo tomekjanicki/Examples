@@ -32,6 +32,10 @@ public readonly record struct DeviceId
 
     public static explicit operator DeviceId(int value) => Extensions.GetValueWhenSuccessOrThrowInvalidCastException(value, static p => TryCreate(p));
 
+    public static DeviceId Min => new();
+
+    public static DeviceId Max() => new(int.MaxValue);
+
     public static OneOf<DeviceId, Error<string>> TryCreate(int? value) =>
         value switch
         {

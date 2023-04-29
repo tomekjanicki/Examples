@@ -1,47 +1,24 @@
-﻿using System.Reflection;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Code.Infrastructure.Json.ConvertFactories;
 
 public sealed class ReadOnlyCollectionJsonConvertFactory : JsonConverterFactory
 {
-    public override bool CanConvert(Type typeToConvert) => typeToConvert.IsGenericType && typeToConvert.GetGenericTypeDefinition() == typeof(IReadOnlyCollection<>);
+    public override bool CanConvert(Type typeToConvert) 
+        => JsonSerializationHelper.CanConvert(typeToConvert, typeof(IReadOnlyCollection<>));
 
     public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
-    {
-        var types = typeToConvert.GetGenericArguments();
-        var type = typeof(ReadOnlyCollectionJsonConverter<>).MakeGenericType(types[0]);
-
-        return (JsonConverter)Activator.CreateInstance(
-            type,
-            BindingFlags.Instance | BindingFlags.Public,
-            binder: null,
-            args: Array.Empty<object>(),
-            culture: null)!;
-    }
+        => JsonSerializationHelper.CreateConverter(JsonSerializationHelper.GetGenericTypeWithOneType(typeToConvert, typeof(ReadOnlyCollectionJsonConverter<>)));
 
     private sealed class ReadOnlyCollectionJsonConverter<T> : JsonConverter<IReadOnlyCollection<T>>
     {
         public override bool HandleNull => true;
 
-        public override IReadOnlyCollection<T> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            if (reader.TokenType == JsonTokenType.Null)
-            {
-                return Array.Empty<T>();
-            }
-            var valueType = typeof(T[]);
-            var valueConverter = (JsonConverter<T[]>)options.GetConverter(valueType);
+        public override IReadOnlyCollection<T> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) 
+            => JsonSerializationHelper.ReadArray<T, IReadOnlyCollection<T>>(ref reader, options, static arg => arg, static () => Array.Empty<T>());
 
-            return valueConverter.Read(ref reader, valueType, options)!;
-        }
-
-        public override void Write(Utf8JsonWriter writer, IReadOnlyCollection<T> value, JsonSerializerOptions options)
-        {
-            var valueType = typeof(IEnumerable<T>);
-            var valueConverter = (JsonConverter<IEnumerable<T>?>)options.GetConverter(valueType);
-            valueConverter.Write(writer, value, options);
-        }
+        public override void Write(Utf8JsonWriter writer, IReadOnlyCollection<T> value, JsonSerializerOptions options) 
+            => JsonSerializationHelper.WriteEnumerable(writer, value, options);
     }
 }
