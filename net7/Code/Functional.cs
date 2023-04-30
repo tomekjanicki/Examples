@@ -13,7 +13,7 @@ public static class Functional
     public static Workflow GetWorkflow(WorkflowId id,
         NonEmptyReadOnlyDictionary<ProcessTypeWithRequestId, RequestData> requests,
         ReadOnlyDictionary<MessageId, SlaData> slas,
-        NonEmptyReadOnlyDictionary<MessageId, MessageType> messages) =>
+        NonEmptyReadOnlyDictionary<MessageId, MessageData> messages) =>
         new()
         {
             Id = id,
@@ -60,12 +60,12 @@ public static class Functional
             : new PersistActionAndHash(currentHash != hash ? PersistAction.Update : PersistAction.None, currentHash);
     }
 
-    public static NonEmptyReadOnlyDictionary<MessageId, MessageType> GetMessages(NonEmptyReadOnlyArray<IBaseWorkflowEvent> events)
+    public static NonEmptyReadOnlyDictionary<MessageId, MessageData> GetMessages(NonEmptyReadOnlyArray<IBaseWorkflowEvent> events)
     {
         var messages = events.OfType<IWithMessageEvent>().Select(static @event => @event.Message);
-        var results = messages.ToDictionary(static message => message.Id, static message => message.Type);
+        var results = messages.ToDictionary(static message => message.Id, static message => new MessageData { MessageType = message.Type, Metadata = message.Metadata });
 
-        return NonEmptyReadOnlyDictionary<MessageId, MessageType>.TryCreate(results).AsT0;
+        return NonEmptyReadOnlyDictionary<MessageId, MessageData>.TryCreate(results).AsT0;
     }
 
     public static NonEmptyReadOnlyDictionary<ProcessTypeWithRequestId, RequestData> GetRequests(NonEmptyReadOnlyArray<IBaseWorkflowEvent> events,

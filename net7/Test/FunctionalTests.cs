@@ -8,11 +8,10 @@ using Code.Types.Collections;
 using Code;
 using Code.Models.Workflow.Entities;
 using FluentAssertions;
-using Code.Models.Workflow.Entities.Abstractions;
 
 namespace Test;
 
-public sealed class FunctionalTests
+public class FunctionalTests
 {
     [Fact]
     public void GetRequestsShouldWorkAsExpected()
@@ -23,15 +22,8 @@ public sealed class FunctionalTests
         var idRdp = new ProcessTypeWithRequestId(ProcessType.ReportDataProvider, requestId1);
         var idE = new ProcessTypeWithRequestId(ProcessType.Enrichment, requestId1);
         var idV = new ProcessTypeWithRequestId(ProcessType.Validation, requestId2);
-        var metaData = new ReadOnlyDictionaryWithEquality<ItemKey, MetadataValue>(new Dictionary<ItemKey, MetadataValue>
-        {
-            { (StringItemKey)"P1", "dd" },
-            { (StringItemKey)"P2", "dd" },
-            { ArrayItemKey.TryCreate("PA", 0).AsT0, "aa" },
-            { ArrayItemKey.TryCreate("PA", 1).AsT0, "aa" }
-        });
-        var rdpMessage = new Message((MessageId)Guid.NewGuid(), MessageType.ReportDataProviderMessage, metaData);
-        var eMessage = new Message((MessageId)Guid.NewGuid(), MessageType.EnrichmentMessage, ReadOnlyDictionaryWithEquality<ItemKey, MetadataValue>.Empty());
+        var rdpMessage = new Message((MessageId)Guid.NewGuid(), MessageType.ReportDataProviderMessage, null);
+        var eMessage = new Message((MessageId)Guid.NewGuid(), MessageType.EnrichmentMessage, null);
         var events = new IBaseWorkflowEvent[]
         {
             new InitialEvent(new DateTime(2020, 1, 1, 10, 0, 0), idRdp, workflowId, rdpMessage),

@@ -4,7 +4,7 @@ using OneOf.Types;
 
 namespace Code.Types.Collections;
 
-public sealed class NonEmptyReadOnlyDictionaryWithEquality<TKey, TValue> : BaseReadOnlyDictionary<TKey, TValue>, IEquatable<NonEmptyReadOnlyDictionaryWithEquality<TKey, TValue>>
+public sealed class NonEmptyReadOnlyDictionaryWithEquality<TKey, TValue> : BaseEquatableReadOnlyDictionary<TKey, TValue>, IEquatable<NonEmptyReadOnlyDictionaryWithEquality<TKey, TValue>>
     where TKey : notnull
 {
     private NonEmptyReadOnlyDictionaryWithEquality(Dictionary<TKey, TValue> dictionary)
@@ -17,12 +17,7 @@ public sealed class NonEmptyReadOnlyDictionaryWithEquality<TKey, TValue> : BaseR
 
     public bool Equals(NonEmptyReadOnlyDictionaryWithEquality<TKey, TValue>? other) => EqualityHelper<NonEmptyReadOnlyDictionaryWithEquality<TKey, TValue>>.Equals(this, other, static (me, oth) => AreEqual(me, oth));
 
-    public override bool Equals(object? obj) => EqualityHelper<NonEmptyReadOnlyDictionaryWithEquality<TKey, TValue>>.Equals(this, obj, (me, oth) => me.Equals(oth));
+    protected override int GetHashCodeInt() => HashCodeHelper<TKey, TValue>.GetHashCode(Dictionary);
 
-    public override int GetHashCode() => HashCodeHelper<TKey, TValue>.GetHashCode(Dictionary);
-
-    public static bool operator !=(NonEmptyReadOnlyDictionaryWithEquality<TKey, TValue> left, NonEmptyReadOnlyDictionaryWithEquality<TKey, TValue> right) => !(left == right);
-
-    public static bool operator ==(NonEmptyReadOnlyDictionaryWithEquality<TKey, TValue> left, NonEmptyReadOnlyDictionaryWithEquality<TKey, TValue> right) => left.Equals(right);
-
+    protected override bool EqualsInt(object? obj) => EqualityHelper<NonEmptyReadOnlyDictionaryWithEquality<TKey, TValue>>.Equals(this, obj, (me, oth) => me.Equals(oth));
 }

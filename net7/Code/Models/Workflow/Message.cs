@@ -1,8 +1,7 @@
 ﻿using Code.Models.Workflow.Entities;
-using Code.Models.Workflow.Entities.Abstractions;
 using Code.Models.Workflow.Enums;
-using Code.Types.Collections;
+using Code.Models.Workflow.MessageMetadata;
 
 namespace Code.Models.Workflow;
 
-public sealed record Message(MessageId Id, MessageType Type, ReadOnlyDictionaryWithEquality<ItemKey, MetadataValue> Metadata);
+public sealed record Message(MessageId Id, MessageType Type, Root? Metadata);

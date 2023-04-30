@@ -2,7 +2,7 @@
 
 namespace Code.Types.Collections;
 
-public sealed class ReadOnlyDictionaryWithEquality<TKey, TValue> : BaseReadOnlyDictionary<TKey, TValue>, IEquatable<ReadOnlyDictionaryWithEquality<TKey, TValue>>
+public sealed class ReadOnlyDictionaryWithEquality<TKey, TValue> : BaseEquatableReadOnlyDictionary<TKey, TValue>, IEquatable<ReadOnlyDictionaryWithEquality<TKey, TValue>>
     where TKey : notnull
 {
     public ReadOnlyDictionaryWithEquality()
@@ -19,11 +19,7 @@ public sealed class ReadOnlyDictionaryWithEquality<TKey, TValue> : BaseReadOnlyD
 
     public bool Equals(ReadOnlyDictionaryWithEquality<TKey, TValue>? other) => EqualityHelper<ReadOnlyDictionaryWithEquality<TKey, TValue>>.Equals(this, other, static (me, oth) => AreEqual(me, oth));
 
-    public override bool Equals(object? obj) => EqualityHelper<ReadOnlyDictionaryWithEquality<TKey, TValue>>.Equals(this, obj, (me, oth) => me.Equals(oth));
+    protected override int GetHashCodeInt() => HashCodeHelper<TKey, TValue>.GetHashCode(Dictionary);
 
-    public override int GetHashCode() => HashCodeHelper<TKey, TValue>.GetHashCode(Dictionary);
-
-    public static bool operator !=(ReadOnlyDictionaryWithEquality<TKey, TValue> left, ReadOnlyDictionaryWithEquality<TKey, TValue> right) => !(left == right);
-
-    public static bool operator ==(ReadOnlyDictionaryWithEquality<TKey, TValue> left, ReadOnlyDictionaryWithEquality<TKey, TValue> right) => left.Equals(right);
+    protected override bool EqualsInt(object? obj) => EqualityHelper<ReadOnlyDictionaryWithEquality<TKey, TValue>>.Equals(this, obj, (me, oth) => me.Equals(oth));
 }
